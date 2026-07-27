@@ -14,8 +14,8 @@ export function renderClusters(clusters) {
     return `
       <div class="empty-state">
         ${icons.inbox}
-        <h3 class="empty-state-title">No email clusters yet</h3>
-        <p class="empty-state-text">Once your emails load, they'll be automatically grouped by sender here.</p>
+        <h3 class="empty-state-title">No emails found</h3>
+        <p class="empty-state-text">Your inbox is empty or no emails matched your search.</p>
       </div>
     `;
   }

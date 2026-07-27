@@ -62,42 +62,56 @@ const getMessageBody = (payload) => {
 const fetchEmails = async (auth, options = {}) => {
     const gmail = google.gmail({ version: 'v1', auth });
     
-    const res = await gmail.users.messages.list({
+    const listParams = {
         userId: 'me',
-        maxResults: options.maxResults || 50,
-        pageToken: options.pageToken,
-        q: options.q || ''
-    });
+        maxResults: parseInt(options.maxResults, 10) || 50
+    };
+    if (options.pageToken) listParams.pageToken = options.pageToken;
+    if (options.q && typeof options.q === 'string' && options.q.trim() !== '' && options.q !== 'undefined') {
+        listParams.q = options.q.trim();
+    }
+
+    const res = await gmail.users.messages.list(listParams);
 
     if (!res.data.messages || res.data.messages.length === 0) {
         return { emails: [], nextPageToken: null };
     }
 
-    const messages = await Promise.all(
-        res.data.messages.map(async (msg) => {
-            const msgData = await gmail.users.messages.get({
-                userId: 'me',
-                id: msg.id,
-                format: 'metadata',
-                metadataHeaders: ['From', 'To', 'Subject', 'Date']
-            });
+    const messages = [];
+    const batchSize = 15;
+    for (let i = 0; i < res.data.messages.length; i += batchSize) {
+        const batch = res.data.messages.slice(i, i + batchSize);
+        const batchResults = await Promise.all(
+            batch.map(async (msg) => {
+                try {
+                    const msgData = await gmail.users.messages.get({
+                        userId: 'me',
+                        id: msg.id,
+                        format: 'metadata',
+                        metadataHeaders: ['From', 'To', 'Subject', 'Date']
+                    });
 
-            const headers = msgData.data.payload.headers;
-            const fromHeader = headers.find(h => h.name.toLowerCase() === 'from')?.value || '';
-            
-            const email = {
-                id: msgData.data.id,
-                threadId: msgData.data.threadId,
-                snippet: msgData.data.snippet,
-                labelIds: msgData.data.labelIds || [],
-                from: parseFrom(fromHeader),
-                to: headers.find(h => h.name.toLowerCase() === 'to')?.value || '',
-                subject: headers.find(h => h.name.toLowerCase() === 'subject')?.value || '(No Subject)',
-                date: headers.find(h => h.name.toLowerCase() === 'date')?.value || ''
-            };
-            return email;
-        })
-    );
+                    const headers = msgData.data?.payload?.headers || [];
+                    const fromHeader = headers.find(h => h.name.toLowerCase() === 'from')?.value || '';
+                    
+                    return {
+                        id: msgData.data.id,
+                        threadId: msgData.data.threadId,
+                        snippet: msgData.data.snippet || '',
+                        labelIds: msgData.data.labelIds || [],
+                        from: parseFrom(fromHeader),
+                        to: headers.find(h => h.name.toLowerCase() === 'to')?.value || '',
+                        subject: headers.find(h => h.name.toLowerCase() === 'subject')?.value || '(No Subject)',
+                        date: headers.find(h => h.name.toLowerCase() === 'date')?.value || ''
+                    };
+                } catch (err) {
+                    console.error(`Failed to fetch message ${msg.id}:`, err.message);
+                    return null;
+                }
+            })
+        );
+        messages.push(...batchResults.filter(Boolean));
+    }
 
     const categorizedEmails = categorize(messages);
 

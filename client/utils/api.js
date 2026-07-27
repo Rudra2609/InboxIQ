@@ -78,3 +78,13 @@ export function fetchEmailById(id) {
 export function fetchStats() {
   return request('/api/stats');
 }
+
+/** Fetch all dashboard data (stats, clusters, categories) in one single request */
+export function fetchDashboardData(params = {}) {
+  const qs = new URLSearchParams();
+  if (params.maxResults) qs.set('maxResults', params.maxResults);
+  if (params.pageToken) qs.set('pageToken', params.pageToken);
+  if (params.q) qs.set('q', params.q);
+  const query = qs.toString();
+  return request(`/api/emails/dashboard${query ? `?${query}` : ''}`);
+}

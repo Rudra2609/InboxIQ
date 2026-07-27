@@ -122,4 +122,46 @@ router.get('/stats', async (req, res) => {
     }
 });
 
+/**
+ * GET /api/emails/dashboard - fetch stats, clusters, and categories in a single call
+ */
+router.get('/emails/dashboard', async (req, res) => {
+    try {
+        const { maxResults, pageToken, q } = req.query;
+        const result = await fetchEmails(req.authClient, {
+            maxResults: parseInt(maxResults, 10) || 100,
+            pageToken,
+            q
+        });
+        const clusters = clusterBySender(result.emails);
+        const categories = groupByCategory(result.emails);
+
+        let unread = 0;
+        result.emails.forEach(email => {
+            if (email.labelIds && email.labelIds.includes('UNREAD')) unread++;
+        });
+
+        const stats = {
+            total: result.emails.length,
+            unread,
+            byCategory: {
+                primary: categories.primary ? categories.primary.length : 0,
+                social: categories.social ? categories.social.length : 0,
+                promotions: categories.promotions ? categories.promotions.length : 0,
+                updates: categories.updates ? categories.updates.length : 0
+            }
+        };
+
+        res.json({
+            stats,
+            clusters,
+            categories,
+            nextPageToken: result.nextPageToken
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        res.status(500).json({ error: 'Failed to fetch dashboard data' });
+    }
+});
+
 module.exports = router;

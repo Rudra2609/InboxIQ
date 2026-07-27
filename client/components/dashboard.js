@@ -2,7 +2,7 @@
  * Dashboard component — main layout with sidebar, stats, and content area.
  */
 import { icons, logoSVG, escapeHtml } from '../utils/helpers.js';
-import { fetchStats, fetchClusters, fetchCategories, logout } from '../utils/api.js';
+import { fetchStats, fetchClusters, fetchCategories, fetchDashboardData, logout } from '../utils/api.js';
 import { renderClusters, initClusters } from './clusterView.js';
 import { renderCategoryTabs, initCategoryTabs } from './categoryTabs.js';
 import { renderEmailList } from './emailList.js';
@@ -232,15 +232,15 @@ export async function initDashboard() {
 
 async function loadAllData() {
   try {
-    const [statsData, clustersData, categoriesData] = await Promise.all([
-      fetchStats(),
-      fetchClusters(),
-      fetchCategories(),
-    ]);
+    const data = await fetchDashboardData();
 
-    cachedStats = statsData;
-    cachedClusters = clustersData;
-    cachedCategories = categoriesData?.categories || categoriesData;
+    cachedStats = data.stats || {
+      total: 0,
+      unread: 0,
+      byCategory: { primary: 0, social: 0, promotions: 0, updates: 0 }
+    };
+    cachedClusters = data.clusters || [];
+    cachedCategories = data.categories || { primary: [], social: [], promotions: [], updates: [] };
 
     renderStats();
     updateSidebarCounts();
@@ -259,27 +259,29 @@ async function loadAllData() {
 
 function renderStats() {
   const grid = document.getElementById('stats-grid');
-  if (!grid || !cachedStats) return;
+  if (!grid) return;
 
   const stats = [
     {
       icon: icons.mail,
       label: 'Total Emails',
-      value: cachedStats.total || 0,
+      value: cachedStats?.total ?? 0,
       color: 'var(--color-accent)',
       colorSoft: 'var(--color-accent-soft)',
     },
     {
       icon: icons.mailOpen,
       label: 'Unread',
-      value: cachedStats.unread || 0,
+      value: cachedStats?.unread ?? 0,
       color: 'var(--color-success)',
       colorSoft: 'rgba(34,197,94,0.12)',
     },
     {
       icon: icons.users,
       label: 'Senders',
-      value: cachedClusters?.clusters?.length || cachedClusters?.length || 0,
+      value: Array.isArray(cachedClusters)
+        ? cachedClusters.length
+        : (cachedClusters?.clusters?.length ?? 0),
       color: 'var(--cat-social)',
       colorSoft: 'rgba(236,72,153,0.12)',
     },
@@ -306,13 +308,12 @@ function renderStats() {
 }
 
 function updateSidebarCounts() {
-  if (!cachedStats?.byCategory) return;
-  const cats = cachedStats.byCategory;
+  const cats = cachedStats?.byCategory || {};
   const el = (id) => document.getElementById(id);
-  if (el('sidebar-count-primary')) el('sidebar-count-primary').textContent = cats.primary || 0;
-  if (el('sidebar-count-social')) el('sidebar-count-social').textContent = cats.social || 0;
-  if (el('sidebar-count-promotions')) el('sidebar-count-promotions').textContent = cats.promotions || 0;
-  if (el('sidebar-count-updates')) el('sidebar-count-updates').textContent = cats.updates || 0;
+  if (el('sidebar-count-primary')) el('sidebar-count-primary').textContent = cats.primary ?? 0;
+  if (el('sidebar-count-social')) el('sidebar-count-social').textContent = cats.social ?? 0;
+  if (el('sidebar-count-promotions')) el('sidebar-count-promotions').textContent = cats.promotions ?? 0;
+  if (el('sidebar-count-updates')) el('sidebar-count-updates').textContent = cats.updates ?? 0;
 }
 
 function renderContent(searchQuery = '') {
