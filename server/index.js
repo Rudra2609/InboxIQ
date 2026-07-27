@@ -29,12 +29,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
+const isProductionCloud = !!(process.env.RENDER || process.env.VERCEL || process.env.CLIENT_URL);
+
 app.use(cookieSession({
     name: 'inboxiq_session',
     secret: process.env.SESSION_SECRET || 'fallback_secret_inboxiq_2026',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    secure: isProductionCloud,
+    sameSite: isProductionCloud ? 'none' : 'lax'
 }));
 
 app.use('/auth', authRoutes);

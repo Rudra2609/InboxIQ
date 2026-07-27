@@ -41,7 +41,12 @@ router.get('/google/callback', async (req, res) => {
     const { code } = req.query;
     try {
         const { tokens } = await oauth2Client.getToken(code);
-        req.session.tokens = tokens;
+        req.session.tokens = {
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token,
+            expiry_date: tokens.expiry_date,
+            token_type: tokens.token_type
+        };
         const redirectUrl = process.env.CLIENT_URL || (process.env.NODE_ENV === 'production'
           ? '/'
           : 'http://localhost:5173');
