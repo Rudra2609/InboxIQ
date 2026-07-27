@@ -29,7 +29,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const isProductionCloud = !!(process.env.RENDER || process.env.VERCEL || process.env.CLIENT_URL);
+const isProductionCloud = process.env.NODE_ENV === 'production' && !process.env.CLIENT_URL?.includes('localhost');
 
 app.use(cookieSession({
     name: 'inboxiq_session',
