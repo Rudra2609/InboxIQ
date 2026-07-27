@@ -48,7 +48,21 @@ router.get('/google/callback', async (req, res) => {
         res.redirect(redirectUrl);
     } catch (error) {
         console.error('Error in auth callback:', error);
-        res.status(500).send('Authentication failed');
+        const errorMsg = error?.response?.data?.error_description || error?.response?.data?.error || error?.message || 'Unknown OAuth error';
+        res.status(500).send(`
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; max-width: 600px; margin: 40px auto; background: #0f172a; color: #f8fafc; border-radius: 12px; border: 1px solid #334155;">
+                <h2 style="color: #ef4444; margin-top: 0;">Authentication failed</h2>
+                <p style="font-size: 16px;"><strong>Google reported:</strong> <code style="background: #1e293b; padding: 4px 8px; border-radius: 4px; color: #f87171;">${errorMsg}</code></p>
+                <hr style="border: 0; border-top: 1px solid #334155; margin: 24px 0;">
+                <p><strong>Most likely causes when testing a new Client ID:</strong></p>
+                <ul style="line-height: 1.6; color: #94a3b8;">
+                    <li><strong>Server not restarted:</strong> Did you restart your backend terminal (<code>Ctrl + C</code> and start again) after modifying your <code>.env</code> file? Node.js only reads <code>.env</code> when the server boots.</li>
+                    <li><strong>Redirect URI mismatch:</strong> Check that <code>http://localhost:3000/auth/google/callback</code> is added under <em>Authorized redirect URIs</em> in Google Cloud Console.</li>
+                    <li><strong>Secret mismatch:</strong> Check that both <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> in <code>.env</code> match your new OAuth client.</li>
+                </ul>
+                <a href="http://localhost:5173" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">Back to App</a>
+            </div>
+        `);
     }
 });
 
