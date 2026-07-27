@@ -81,48 +81,6 @@ router.get('/emails/categories', async (req, res) => {
 });
 
 /**
- * GET /api/emails/:id - fetch single email
- */
-router.get('/emails/:id', async (req, res) => {
-    try {
-        const email = await fetchEmailById(req.authClient, req.params.id);
-        res.json(email);
-    } catch (error) {
-        console.error('Error fetching email:', error);
-        res.status(500).json({ error: 'Failed to fetch email' });
-    }
-});
-
-/**
- * GET /api/stats - return stats
- */
-router.get('/stats', async (req, res) => {
-    try {
-        const result = await fetchEmails(req.authClient, { maxResults: 100 });
-        const categories = groupByCategory(result.emails);
-        
-        let unread = 0;
-        result.emails.forEach(email => {
-            if (email.labelIds && email.labelIds.includes('UNREAD')) unread++;
-        });
-
-        res.json({
-            total: result.emails.length,
-            unread,
-            byCategory: {
-                primary: categories.primary ? categories.primary.length : 0,
-                social: categories.social ? categories.social.length : 0,
-                promotions: categories.promotions ? categories.promotions.length : 0,
-                updates: categories.updates ? categories.updates.length : 0
-            }
-        });
-    } catch (error) {
-        console.error('Error fetching stats:', error);
-        res.status(500).json({ error: 'Failed to fetch stats' });
-    }
-});
-
-/**
  * GET /api/emails/dashboard - fetch stats, clusters, and categories in a single call
  */
 router.get('/emails/dashboard', async (req, res) => {
@@ -161,6 +119,48 @@ router.get('/emails/dashboard', async (req, res) => {
     } catch (error) {
         console.error('Error fetching dashboard data:', error);
         res.status(500).json({ error: 'Failed to fetch dashboard data' });
+    }
+});
+
+/**
+ * GET /api/emails/:id - fetch single email
+ */
+router.get('/emails/:id', async (req, res) => {
+    try {
+        const email = await fetchEmailById(req.authClient, req.params.id);
+        res.json(email);
+    } catch (error) {
+        console.error('Error fetching email:', error);
+        res.status(500).json({ error: 'Failed to fetch email' });
+    }
+});
+
+/**
+ * GET /api/stats - return stats
+ */
+router.get('/stats', async (req, res) => {
+    try {
+        const result = await fetchEmails(req.authClient, { maxResults: 100 });
+        const categories = groupByCategory(result.emails);
+        
+        let unread = 0;
+        result.emails.forEach(email => {
+            if (email.labelIds && email.labelIds.includes('UNREAD')) unread++;
+        });
+
+        res.json({
+            total: result.emails.length,
+            unread,
+            byCategory: {
+                primary: categories.primary ? categories.primary.length : 0,
+                social: categories.social ? categories.social.length : 0,
+                promotions: categories.promotions ? categories.promotions.length : 0,
+                updates: categories.updates ? categories.updates.length : 0
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        res.status(500).json({ error: 'Failed to fetch stats' });
     }
 });
 
