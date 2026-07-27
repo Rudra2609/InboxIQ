@@ -2,7 +2,7 @@
  * Dashboard component — main layout with sidebar, stats, and content area.
  */
 import { icons, logoSVG, escapeHtml } from '../utils/helpers.js';
-import { fetchStats, fetchClusters, fetchCategories, fetchDashboardData, logout } from '../utils/api.js';
+import { fetchStats, fetchClusters, fetchCategories, fetchDashboardData, logout, API_BASE } from '../utils/api.js';
 import { renderClusters, initClusters } from './clusterView.js';
 import { renderCategoryTabs, initCategoryTabs } from './categoryTabs.js';
 import { renderEmailList } from './emailList.js';
@@ -182,7 +182,7 @@ export async function initDashboard() {
 
   // Switch Account
   document.getElementById('btn-switch-account')?.addEventListener('click', () => {
-    window.location.href = '/auth/google/switch';
+    window.location.href = `${API_BASE}/auth/google/switch`;
   });
 
   // Refresh

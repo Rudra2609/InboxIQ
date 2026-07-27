@@ -2,6 +2,7 @@
  * Login component — full-screen login with Google OAuth button.
  */
 import { icons, logoSVG } from '../utils/helpers.js';
+import { API_BASE } from '../utils/api.js';
 
 export function renderLogin() {
   return `
@@ -50,7 +51,7 @@ export function initLogin() {
   const btn = document.getElementById('btn-google-login');
   if (btn) {
     btn.addEventListener('click', () => {
-      window.location.href = '/auth/google';
+      window.location.href = `${API_BASE}/auth/google`;
     });
   }
 }

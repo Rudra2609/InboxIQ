@@ -24,15 +24,14 @@ router.get('/google', (req, res) => {
  * Force Google account picker for switching accounts
  */
 router.get('/google/switch', (req, res) => {
-    // Destroy current session before switching
-    req.session.destroy(() => {
-        const url = oauth2Client.generateAuthUrl({
-            access_type: 'offline',
-            prompt: 'select_account consent',
-            scope: ['https://www.googleapis.com/auth/gmail.readonly', 'profile', 'email']
-        });
-        res.redirect(url);
+    // Clear cookie-session before switching
+    req.session = null;
+    const url = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        prompt: 'select_account consent',
+        scope: ['https://www.googleapis.com/auth/gmail.readonly', 'profile', 'email']
     });
+    res.redirect(url);
 });
 
 /**
@@ -43,10 +42,9 @@ router.get('/google/callback', async (req, res) => {
     try {
         const { tokens } = await oauth2Client.getToken(code);
         req.session.tokens = tokens;
-        // In development, redirect to the Vite dev server
-        const redirectUrl = process.env.NODE_ENV === 'production'
+        const redirectUrl = process.env.CLIENT_URL || (process.env.NODE_ENV === 'production'
           ? '/'
-          : 'http://localhost:5173';
+          : 'http://localhost:5173');
         res.redirect(redirectUrl);
     } catch (error) {
         console.error('Error in auth callback:', error);
@@ -58,12 +56,8 @@ router.get('/google/callback', async (req, res) => {
  * Logout user by destroying session
  */
 router.get('/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).json({ error: 'Could not log out' });
-        }
-        res.json({ success: true });
-    });
+    req.session = null;
+    res.json({ success: true });
 });
 
 /**

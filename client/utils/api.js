@@ -2,7 +2,7 @@
  * API client — handles all HTTP requests to the backend.
  */
 
-const API_BASE = '';
+export const API_BASE = import.meta.env.VITE_API_URL || '';
 
 /**
  * Generic fetch wrapper with error handling.
