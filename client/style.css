@@ -12,31 +12,31 @@
 
 /* ── Design Tokens ─────────────────────────────────────────── */
 :root {
-  /* Colors */
-  --color-primary: #0F172A;
+  /* Crisp Light Mode Colors (Apple Mail / Material You) */
+  --color-primary: #1E293B;
   --color-on-primary: #FFFFFF;
-  --color-secondary: #1E293B;
-  --color-accent: #6366F1;
-  --color-accent-glow: rgba(99, 102, 241, 0.25);
-  --color-accent-soft: rgba(99, 102, 241, 0.12);
-  --color-background: #020617;
-  --color-foreground: #F8FAFC;
-  --color-foreground-muted: #94A3B8;
-  --color-muted: #1A1E2F;
-  --color-border: rgba(51, 65, 85, 0.5);
-  --color-border-strong: #334155;
-  --color-destructive: #EF4444;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-surface: rgba(15, 23, 42, 0.6);
-  --color-surface-elevated: rgba(30, 41, 59, 0.5);
-  --color-glass: rgba(15, 23, 42, 0.65);
+  --color-secondary: #EFF6FF;
+  --color-accent: #2563EB;
+  --color-accent-glow: rgba(37, 99, 235, 0.15);
+  --color-accent-soft: #EFF6FF;
+  --color-background: #F8FAFC;
+  --color-foreground: #0F172A;
+  --color-foreground-muted: #64748B;
+  --color-muted: #F1F5F9;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-destructive: #DC2626;
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F8FAFC;
+  --color-glass: rgba(255, 255, 255, 0.95);
 
   /* Category Colors */
-  --cat-primary: #6366F1;
-  --cat-social: #EC4899;
-  --cat-promotions: #F59E0B;
-  --cat-updates: #06B6D4;
+  --cat-primary: #2563EB;
+  --cat-social: #DB2777;
+  --cat-promotions: #D97706;
+  --cat-updates: #0D9488;
 
   /* Spacing (Density 7/10) */
   --space-xs: 4px;
@@ -54,12 +54,12 @@
   --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 30px var(--color-accent-glow);
+  /* Shadows (Refined Light Mode Shadows) */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.08);
+  --shadow-xl: 0 20px 40px rgba(15, 23, 42, 0.12);
+  --shadow-glow: 0 4px 20px rgba(37, 99, 235, 0.15);
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -139,51 +139,9 @@ button {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-foreground-muted); }
 
-/* ── Ambient Background Blobs ──────────────────────────────── */
+/* ── Ambient Background Blobs (Hidden in Crisp Light Mode) ─── */
 .ambient-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.ambient-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.07;
-  animation: blobFloat 20s ease-in-out infinite alternate;
-}
-
-.ambient-blob--1 {
-  width: 600px; height: 600px;
-  background: var(--color-accent);
-  top: -10%; left: -5%;
-  animation-delay: 0s;
-}
-
-.ambient-blob--2 {
-  width: 500px; height: 500px;
-  background: #EC4899;
-  bottom: -15%; right: -10%;
-  animation-delay: -7s;
-  animation-duration: 25s;
-}
-
-.ambient-blob--3 {
-  width: 400px; height: 400px;
-  background: #06B6D4;
-  top: 40%; right: 20%;
-  animation-delay: -14s;
-  animation-duration: 22s;
-}
-
-@keyframes blobFloat {
-  0%   { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(30px, -40px) scale(1.05); }
-  66%  { transform: translate(-20px, 20px) scale(0.95); }
-  100% { transform: translate(10px, -10px) scale(1.02); }
+  display: none;
 }
 
 /* ── Login Page ────────────────────────────────────────────── */
@@ -783,8 +741,8 @@ button {
 }
 
 .cluster-card:hover {
-  border-color: rgba(99, 102, 241, 0.38);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(99, 102, 241, 0.12);
+  border-color: #93C5FD;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
   transform: translateY(-2px);
 }
 
@@ -813,7 +771,7 @@ button {
   color: white;
   flex-shrink: 0;
   text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .cluster-info {
@@ -840,9 +798,9 @@ button {
   font-size: 0.7rem;
   font-family: 'JetBrains Mono', monospace;
   padding: 2px 8px;
-  background: rgba(99, 102, 241, 0.14);
-  color: #818cf8;
-  border: 1px solid rgba(99, 102, 241, 0.28);
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
   border-radius: var(--radius-full);
   font-weight: 500;
   white-space: nowrap;
@@ -868,9 +826,9 @@ button {
   align-items: center;
   gap: 5px;
   padding: 4px 12px;
-  background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
-  border: 1px solid rgba(99, 102, 241, 0.28);
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
   border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   font-weight: 600;
@@ -1554,9 +1512,9 @@ button {
   font-size: 0.7rem;
   padding: 2px 6px;
   background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid #E2E8F0;
   border-radius: 6px;
-  color: var(--color-foreground-muted);
+  color: #475569;
   pointer-events: none;
   font-weight: 600;
   margin-left: 6px;
@@ -1565,9 +1523,9 @@ button {
 .cmd-palette-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   align-items: flex-start;
@@ -1579,10 +1537,10 @@ button {
 .cmd-palette-modal {
   width: 100%;
   max-width: 600px;
-  background: #0f121d;
-  border: 1px solid rgba(99, 102, 241, 0.35);
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: var(--radius-xl);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12), 0 0 20px rgba(37, 99, 235, 0.08);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1594,14 +1552,14 @@ button {
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid #E2E8F0;
+  background: #F8FAFC;
 }
 
 .cmd-palette-search svg {
   width: 20px;
   height: 20px;
-  color: #818cf8;
+  color: #2563EB;
   flex-shrink: 0;
 }
 
@@ -1618,10 +1576,10 @@ button {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
   padding: 3px 8px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
   border-radius: 6px;
-  color: var(--color-foreground-muted);
+  color: #64748B;
 }
 
 .cmd-palette-list {
@@ -1659,15 +1617,15 @@ button {
 }
 
 .cmd-item:hover {
-  background: rgba(99, 102, 241, 0.16);
-  color: #ffffff;
+  background: #EFF6FF;
+  color: #1E40AF;
   transform: translateX(3px);
 }
 
 .cmd-item svg {
   width: 18px;
   height: 18px;
-  color: #818cf8;
+  color: #2563EB;
 }
 
 .cmd-item kbd {
@@ -1675,9 +1633,10 @@ button {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
   padding: 2px 6px;
-  background: rgba(255, 255, 255, 0.07);
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
   border-radius: 4px;
-  color: var(--color-foreground-muted);
+  color: #64748B;
 }
 
 .cmd-palette-footer {
@@ -1685,8 +1644,8 @@ button {
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid #E2E8F0;
+  background: #F8FAFC;
   font-size: 0.75rem;
   color: var(--color-foreground-muted);
 }

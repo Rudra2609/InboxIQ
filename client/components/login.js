@@ -6,16 +6,11 @@ import { API_BASE } from '../utils/api.js';
 
 export function renderLogin() {
   return `
-    <div class="ambient-bg">
-      <div class="ambient-blob ambient-blob--1"></div>
-      <div class="ambient-blob ambient-blob--2"></div>
-      <div class="ambient-blob ambient-blob--3"></div>
-    </div>
     <div class="login-container">
       <div class="login-card">
         <div style="display:flex;justify-content:center;margin-bottom:12px;">
-          <span class="cluster-domain-badge" style="background:rgba(99,102,241,0.18);color:#a5b4fc;border-color:rgba(99,102,241,0.4);">
-            ✨ NEO-OBSIDIAN AURORA UI · 2.0
+          <span class="cluster-domain-badge" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;">
+            ✨ CRISP LIGHT MODE · 2.0
           </span>
         </div>
         <div class="login-logo">
@@ -28,16 +23,16 @@ export function renderLogin() {
         </p>
 
         <!-- Visual Preview Mini Card -->
-        <div style="background:rgba(15,23,42,0.65);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px;margin-bottom:20px;text-align:left;">
+        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:12px;margin-bottom:20px;text-align:left;box-shadow:0 4px 12px rgba(15,23,42,0.05);">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-            <div style="width:30px;height:30px;border-radius:8px;background:#6366f1;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;">GH</div>
+            <div style="width:30px;height:30px;border-radius:8px;background:#2563EB;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;">GH</div>
             <div style="flex:1;">
-              <div style="font-size:0.82rem;font-weight:600;color:#f8fafc;">GitHub Notifications <span style="font-size:0.7rem;color:#818cf8;background:rgba(99,102,241,0.2);padding:1px 6px;border-radius:99px;margin-left:4px;">@github.com</span></div>
-              <div style="font-size:0.72rem;color:#94a3b8;">notifications@github.com</div>
+              <div style="font-size:0.82rem;font-weight:600;color:#0F172A;">GitHub Notifications <span style="font-size:0.7rem;color:#2563EB;background:#EFF6FF;border:1px solid #BFDBFE;padding:1px 6px;border-radius:99px;margin-left:4px;">@github.com</span></div>
+              <div style="font-size:0.72rem;color:#64748B;">notifications@github.com</div>
             </div>
-            <span style="font-size:0.7rem;font-weight:600;color:#818cf8;background:rgba(99,102,241,0.15);padding:2px 8px;border-radius:99px;">14 emails</span>
+            <span style="font-size:0.7rem;font-weight:600;color:#2563EB;background:#EFF6FF;border:1px solid #BFDBFE;padding:2px 8px;border-radius:99px;">14 emails</span>
           </div>
-          <div style="font-size:0.75rem;color:#cbd5e1;padding-left:40px;border-left:2px solid rgba(99,102,241,0.3);margin-left:14px;">
+          <div style="font-size:0.75rem;color:#475569;padding-left:40px;border-left:2px solid #BFDBFE;margin-left:14px;">
             "Security alert: new sign-in from Chrome on Windows..."
           </div>
         </div>
