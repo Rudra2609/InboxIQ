@@ -49,6 +49,9 @@ export function renderDashboard(user) {
           </div>
         </div>
         <div class="header-right">
+          <button class="mobile-search-toggle" id="mobile-search-toggle" aria-label="Search emails" title="Search">
+            ${icons.search}
+          </button>
           <button class="btn-refresh" id="btn-refresh" aria-label="Refresh emails" title="Refresh">
             ${icons.refresh}
           </button>
@@ -71,6 +74,17 @@ export function renderDashboard(user) {
           </div>
         </div>
       </header>
+
+      <!-- Mobile Search Bar (<768px expandable) -->
+      <div class="mobile-search-bar" id="mobile-search-bar" style="display:none">
+        <div class="mobile-search-input-wrapper">
+          ${icons.search}
+          <input type="text" id="mobile-search-input" placeholder="Search emails, senders, subjects..." aria-label="Search emails on mobile" />
+          <button class="mobile-search-clear" id="mobile-search-clear" aria-label="Clear search" style="display:none">
+            ${icons.x}
+          </button>
+        </div>
+      </div>
 
       <!-- Sidebar -->
       <aside class="sidebar" id="sidebar">
@@ -132,6 +146,26 @@ export function renderDashboard(user) {
           </div>
         </div>
       </main>
+
+      <!-- Mobile Bottom Navigation (<768px only) -->
+      <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Mobile navigation">
+        <button class="mobile-nav-item ${currentView === 'clusters' ? 'active' : ''}" data-mobile-view="clusters">
+          <span class="mobile-nav-icon">${icons.layers}</span>
+          <span class="mobile-nav-label">Clusters</span>
+        </button>
+        <button class="mobile-nav-item ${currentView === 'categories' ? 'active' : ''}" data-mobile-view="categories">
+          <span class="mobile-nav-icon">${icons.grid}</span>
+          <span class="mobile-nav-label">Inbox</span>
+        </button>
+        <button class="mobile-nav-item" data-mobile-action="search" aria-label="Search emails">
+          <span class="mobile-nav-icon">${icons.search}</span>
+          <span class="mobile-nav-label">Search</span>
+        </button>
+        <button class="mobile-nav-item" data-mobile-action="stats" aria-label="Toggle Stats">
+          <span class="mobile-nav-icon">${icons.barChart}</span>
+          <span class="mobile-nav-label">Stats</span>
+        </button>
+      </nav>
     </div>
   `;
 }
@@ -144,8 +178,7 @@ export async function initDashboard() {
   document.querySelectorAll('[data-view]').forEach((btn) => {
     btn.addEventListener('click', () => {
       currentView = btn.dataset.view;
-      document.querySelectorAll('[data-view]').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
+      updateActiveNavStates();
       renderContent();
     });
   });
@@ -155,10 +188,82 @@ export async function initDashboard() {
     btn.addEventListener('click', () => {
       currentView = 'categories';
       currentCategory = btn.dataset.sidebarCategory;
-      document.querySelectorAll('[data-view]').forEach((b) => b.classList.remove('active'));
-      document.querySelector('[data-view="categories"]')?.classList.add('active');
+      updateActiveNavStates();
       renderContent();
     });
+  });
+
+  // Mobile bottom navigation switching
+  document.querySelectorAll('[data-mobile-view]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentView = btn.dataset.mobileView;
+      if (currentView === 'categories' && !currentCategory) {
+        currentCategory = 'all';
+      }
+      updateActiveNavStates();
+      renderContent();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Mobile search toggle & clear
+  const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+  const mobileSearchBtn = document.querySelector('[data-mobile-action="search"]');
+  const mobileSearchBar = document.getElementById('mobile-search-bar');
+  const mobileSearchInput = document.getElementById('mobile-search-input');
+  const mobileSearchClear = document.getElementById('mobile-search-clear');
+
+  const toggleMobileSearch = () => {
+    if (!mobileSearchBar) return;
+    const isHidden = mobileSearchBar.style.display === 'none';
+    mobileSearchBar.style.display = isHidden ? 'block' : 'none';
+    if (isHidden) {
+      mobileSearchInput?.focus();
+    } else {
+      if (mobileSearchInput) {
+        mobileSearchInput.value = '';
+        const desktopSearch = document.getElementById('search-input');
+        if (desktopSearch) desktopSearch.value = '';
+        renderContent();
+      }
+    }
+  };
+
+  mobileSearchToggle?.addEventListener('click', toggleMobileSearch);
+  mobileSearchBtn?.addEventListener('click', toggleMobileSearch);
+
+  let mobileSearchTimeout;
+  mobileSearchInput?.addEventListener('input', (e) => {
+    const val = e.target.value;
+    if (mobileSearchClear) {
+      mobileSearchClear.style.display = val ? 'flex' : 'none';
+    }
+    const desktopSearch = document.getElementById('search-input');
+    if (desktopSearch) desktopSearch.value = val;
+    clearTimeout(mobileSearchTimeout);
+    mobileSearchTimeout = setTimeout(() => {
+      renderContent(val);
+    }, 300);
+  });
+
+  mobileSearchClear?.addEventListener('click', () => {
+    if (mobileSearchInput) mobileSearchInput.value = '';
+    if (mobileSearchClear) mobileSearchClear.style.display = 'none';
+    const desktopSearch = document.getElementById('search-input');
+    if (desktopSearch) desktopSearch.value = '';
+    renderContent('');
+    mobileSearchInput?.focus();
+  });
+
+  // Mobile stats toggle
+  const mobileStatsBtn = document.querySelector('[data-mobile-action="stats"]');
+  const statsGrid = document.getElementById('stats-grid');
+  mobileStatsBtn?.addEventListener('click', () => {
+    if (!statsGrid) return;
+    statsGrid.classList.toggle('mobile-hidden');
+    if (!statsGrid.classList.contains('mobile-hidden')) {
+      statsGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 
   // User menu
@@ -195,33 +300,11 @@ export async function initDashboard() {
     loadAllData().finally(() => btn?.classList.remove('spinning'));
   });
 
-  // Mobile menu
-  const mobileBtn = document.getElementById('mobile-menu-btn');
-  const sidebar = document.getElementById('sidebar');
-  if (mobileBtn && sidebar) {
-    mobileBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      if (sidebar.classList.contains('open')) {
-        const overlay = document.createElement('div');
-        overlay.className = 'sidebar-overlay';
-        overlay.id = 'sidebar-overlay';
-        overlay.addEventListener('click', () => {
-          sidebar.classList.remove('open');
-          overlay.remove();
-        });
-        sidebar.parentElement.appendChild(overlay);
-      } else {
-        document.getElementById('sidebar-overlay')?.remove();
-      }
-    });
-  }
-
   // Search
   let searchTimeout;
   document.getElementById('search-input')?.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      // For now, filter clusters/categories client-side
       renderContent(e.target.value);
     }, 300);
   });
@@ -319,6 +402,7 @@ function updateSidebarCounts() {
 function renderContent(searchQuery = '') {
   const contentArea = document.getElementById('content-area');
   if (!contentArea) return;
+  updateActiveNavStates();
 
   if (currentView === 'clusters') {
     let clusters = cachedClusters?.clusters || cachedClusters || [];
@@ -409,5 +493,14 @@ function bindEmailClicks() {
       }
       openEmailDetail(emailId, preview);
     });
+  });
+}
+
+function updateActiveNavStates() {
+  document.querySelectorAll('[data-view]').forEach((b) => {
+    b.classList.toggle('active', b.dataset.view === currentView);
+  });
+  document.querySelectorAll('[data-mobile-view]').forEach((b) => {
+    b.classList.toggle('active', b.dataset.mobileView === currentView);
   });
 }
