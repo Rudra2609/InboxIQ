@@ -46,6 +46,7 @@ export function renderDashboard(user) {
           <div class="header-search">
             ${icons.search}
             <input type="text" id="search-input" placeholder="Search emails..." aria-label="Search emails" />
+            <kbd class="search-shortcut" title="Press ⌘K to open spotlight search">⌘K</kbd>
           </div>
         </div>
         <div class="header-right">
@@ -166,6 +167,58 @@ export function renderDashboard(user) {
           <span class="mobile-nav-label">Stats</span>
         </button>
       </nav>
+
+      <!-- Spotlight Command Palette Modal (Cmd+K / Ctrl+K) -->
+      <div class="cmd-palette-overlay" id="cmd-palette-overlay" style="display:none" role="dialog" aria-modal="true" aria-label="Command Palette">
+        <div class="cmd-palette-modal">
+          <div class="cmd-palette-search">
+            ${icons.search}
+            <input type="text" id="cmd-palette-input" placeholder="Type a command, search senders or jump to category..." autocomplete="off" />
+            <kbd class="cmd-shortcut-badge">ESC</kbd>
+          </div>
+          <div class="cmd-palette-list" id="cmd-palette-list">
+            <div class="cmd-group-title">QUICK VIEWS</div>
+            <button class="cmd-item" data-cmd-view="clusters">
+              ${icons.layers}
+              <span>Sender Clusters</span>
+              <kbd>C</kbd>
+            </button>
+            <button class="cmd-item" data-cmd-view="categories">
+              ${icons.grid}
+              <span>All Categories</span>
+              <kbd>I</kbd>
+            </button>
+            <div class="cmd-group-title">CATEGORIES</div>
+            <button class="cmd-item" data-cmd-cat="primary">
+              <span class="sidebar-category-dot primary"></span>
+              <span>Primary Inbox</span>
+            </button>
+            <button class="cmd-item" data-cmd-cat="social">
+              <span class="sidebar-category-dot social"></span>
+              <span>Social Notifications</span>
+            </button>
+            <button class="cmd-item" data-cmd-cat="promotions">
+              <span class="sidebar-category-dot promotions"></span>
+              <span>Promotions & Deals</span>
+            </button>
+            <button class="cmd-item" data-cmd-cat="updates">
+              <span class="sidebar-category-dot updates"></span>
+              <span>Updates & Alerts</span>
+            </button>
+            <div class="cmd-group-title">ACCOUNT & ACTIONS</div>
+            <button class="cmd-item" id="cmd-refresh">
+              ${icons.refresh}
+              <span>Refresh Gmail Data</span>
+              <kbd>R</kbd>
+            </button>
+          </div>
+          <div class="cmd-palette-footer">
+            <span><strong>⌘K</strong> anywhere</span>
+            <span><strong>Enter</strong> to select</span>
+            <span><strong>Esc</strong> to close</span>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -307,6 +360,72 @@ export async function initDashboard() {
     searchTimeout = setTimeout(() => {
       renderContent(e.target.value);
     }, 300);
+  });
+
+  // Command Palette Spotlight (Cmd+K / Ctrl+K)
+  const cmdOverlay = document.getElementById('cmd-palette-overlay');
+  const cmdInput = document.getElementById('cmd-palette-input');
+
+  const toggleCmdPalette = (open = undefined) => {
+    if (!cmdOverlay) return;
+    const shouldOpen = open !== undefined ? open : cmdOverlay.style.display === 'none';
+    cmdOverlay.style.display = shouldOpen ? 'flex' : 'none';
+    if (shouldOpen) {
+      cmdInput?.focus();
+    } else {
+      if (cmdInput) cmdInput.value = '';
+    }
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      toggleCmdPalette();
+    }
+    if (e.key === 'Escape' && cmdOverlay && cmdOverlay.style.display !== 'none') {
+      e.preventDefault();
+      toggleCmdPalette(false);
+    }
+  });
+
+  cmdOverlay?.addEventListener('click', (e) => {
+    if (e.target === cmdOverlay) {
+      toggleCmdPalette(false);
+    }
+  });
+
+  cmdInput?.addEventListener('input', (e) => {
+    const val = e.target.value;
+    const desktopSearch = document.getElementById('search-input');
+    if (desktopSearch) desktopSearch.value = val;
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      renderContent(val);
+    }, 300);
+  });
+
+  document.querySelectorAll('[data-cmd-view]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentView = btn.dataset.cmdView;
+      updateActiveNavStates();
+      renderContent();
+      toggleCmdPalette(false);
+    });
+  });
+
+  document.querySelectorAll('[data-cmd-cat]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentView = 'categories';
+      currentCategory = btn.dataset.cmdCat;
+      updateActiveNavStates();
+      renderContent();
+      toggleCmdPalette(false);
+    });
+  });
+
+  document.getElementById('cmd-refresh')?.addEventListener('click', () => {
+    document.getElementById('btn-refresh')?.click();
+    toggleCmdPalette(false);
   });
 
   // Load data

@@ -1,7 +1,7 @@
 /**
  * Cluster View — renders sender clusters as expandable accordion cards.
  */
-import { stringToColor, getInitials, timeAgo, icons } from '../utils/helpers.js';
+import { stringToColor, getInitials, timeAgo, icons, getDomain } from '../utils/helpers.js';
 import { renderEmailList } from './emailList.js';
 
 /**
@@ -31,15 +31,18 @@ export function renderClusters(clusters) {
               ${getInitials(cluster.sender?.name, cluster.sender?.email)}
             </div>
             <div class="cluster-info">
-              <div class="cluster-sender-name">${cluster.sender?.name || cluster.sender?.email || 'Unknown'}</div>
+              <div class="cluster-title-row">
+                <span class="cluster-sender-name">${cluster.sender?.name || cluster.sender?.email || 'Unknown'}</span>
+                <span class="cluster-domain-badge">@${getDomain(cluster.sender?.email || '')}</span>
+              </div>
               <div class="cluster-sender-email">${cluster.sender?.email || ''}</div>
             </div>
             <div class="cluster-meta">
-              <div class="cluster-count">
+              <span class="cluster-count-pill">
                 ${icons.mail}
-                ${cluster.emailCount || cluster.emails?.length || 0}
-              </div>
-              <div class="cluster-date">${timeAgo(cluster.latestDate)}</div>
+                <span>${cluster.emailCount || cluster.emails?.length || 0}</span>
+              </span>
+              <span class="cluster-date">${timeAgo(cluster.latestDate)}</span>
               <div class="cluster-chevron">${icons.chevronDown}</div>
             </div>
           </div>

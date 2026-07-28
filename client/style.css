@@ -783,7 +783,9 @@ button {
 }
 
 .cluster-card:hover {
-  border-color: var(--color-border-strong);
+  border-color: rgba(99, 102, 241, 0.38);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(99, 102, 241, 0.12);
+  transform: translateY(-2px);
 }
 
 .cluster-header {
@@ -792,7 +794,7 @@ button {
   gap: var(--space-md);
   padding: var(--space-md) var(--space-lg);
   cursor: pointer;
-  transition: background var(--duration-fast) ease;
+  transition: all var(--duration-fast) ease;
 }
 
 .cluster-header:hover {
@@ -811,11 +813,19 @@ button {
   color: white;
   flex-shrink: 0;
   text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .cluster-info {
   flex: 1;
   min-width: 0;
+}
+
+.cluster-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
 }
 
 .cluster-sender-name {
@@ -824,6 +834,18 @@ button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.cluster-domain-badge {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 8px;
+  background: rgba(99, 102, 241, 0.14);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .cluster-sender-email {
@@ -841,21 +863,22 @@ button {
   flex-shrink: 0;
 }
 
-.cluster-count {
+.cluster-count-pill {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  padding: 4px 10px;
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+  gap: 5px;
+  padding: 4px 12px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.28);
   border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   font-weight: 600;
 }
 
-.cluster-count svg {
-  width: 12px;
-  height: 12px;
+.cluster-count-pill svg {
+  width: 13px;
+  height: 13px;
 }
 
 .cluster-date {
@@ -1524,3 +1547,147 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Command Palette Spotlight (Cmd+K) ────────────────────── */
+.search-shortcut {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--color-foreground-muted);
+  pointer-events: none;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.cmd-palette-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 80px 16px 20px;
+  animation: overlayIn 0.15s ease;
+}
+
+.cmd-palette-modal {
+  width: 100%;
+  max-width: 600px;
+  background: #0f121d;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(99, 102, 241, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalScaleIn 0.2s var(--ease-expo);
+}
+
+.cmd-palette-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cmd-palette-search svg {
+  width: 20px;
+  height: 20px;
+  color: #818cf8;
+  flex-shrink: 0;
+}
+
+.cmd-palette-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-foreground);
+  font-size: var(--font-size-base);
+  outline: none;
+}
+
+.cmd-shortcut-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--color-foreground-muted);
+}
+
+.cmd-palette-list {
+  padding: 10px;
+  max-height: 380px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cmd-group-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-foreground-muted);
+  padding: 10px 12px 4px;
+}
+
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: none;
+  color: var(--color-foreground);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.cmd-item:hover {
+  background: rgba(99, 102, 241, 0.16);
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+.cmd-item svg {
+  width: 18px;
+  height: 18px;
+  color: #818cf8;
+}
+
+.cmd-item kbd {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  color: var(--color-foreground-muted);
+}
+
+.cmd-palette-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.75rem;
+  color: var(--color-foreground-muted);
+}
+
